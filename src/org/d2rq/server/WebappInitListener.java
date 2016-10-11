@@ -38,9 +38,46 @@ public class WebappInitListener implements ServletContextListener {
 			loader.setMappingFile(configFileName);
 			loader.setResourceStem("resource/");
 		}
+		if (loader.getJdbcURL()==null){
+			String jdbcurl = context.getInitParameter("jdbcurl");	
+			String username = context.getInitParameter("username");	
+			String password = context.getInitParameter("password");	
+			String baseuri = context.getInitParameter("baseuri");
+			String localport = context.getInitParameter("localport");
+			
+			if(username !=null)
+				loader.setUsername(username);
+			if(password !=null)
+				loader.setPassword(password);
+			if(jdbcurl !=null)
+				loader.setJdbcURL(jdbcurl);
+			if(baseuri !=null)
+				loader.setSystemBaseURI(baseuri);
+			if(localport !=null)
+				try{
+					int i = Integer.parseInt(localport);
+					if (i>=65535){
+						i=-1;
+						throw new NumberFormatException();
+					}
+					loader.setPort(i);
+				}
+			catch (NumberFormatException e){
+				System.out.println(localport+" is not a valid port number");
+			}
+			
+			//if it's still null 
+			if (loader.getJdbcURL()==null){
+				System.out.println("no JDBC URL specified!");
+				System.out.println("insert <param-name>jdbcurl</param-name>\n<param-value>url</param-value> etc into web.xml");
+			}			
+			
+		}
+		
 		D2RServer server = loader.getD2RServer();
 		server.start();
 		VelocityWrapper.initEngine(server, context);
+
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {
