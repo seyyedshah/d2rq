@@ -88,7 +88,7 @@ public class WebappInitListener implements ServletContextListener {
 	
 	private String absolutize(String fileName, ServletContext context) {
 		if (!fileName.matches("[a-zA-Z0-9]+:.*")) {
-			fileName = context.getRealPath("WEB-INF/" + fileName);
+			fileName = context.getRealPath("/WEB-INF/" + fileName);
 		}
 		return ConfigLoader.toAbsoluteURI(fileName);
 	}
